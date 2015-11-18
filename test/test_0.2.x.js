@@ -625,6 +625,93 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 					});
 				}, /`repeating\.until` must be a Date Object/);
 			});
+
+			it('should throw error when repeating.byDay is not valid', function() {
+				var cal = ical();
+				assert.throws(function() {
+					cal.createEvent({
+						start: new Date(),
+						end: new Date(),
+						summary: 'test',
+						repeating: {
+							freq: 'DAILY',
+							interval: 2,
+							byDay: 'FOO'
+						}
+					});
+				}, /`repeating\.byDay` contains invalid value `FOO`/);
+
+				assert.throws(function() {
+					cal.createEvent({
+						start: new Date(),
+						end: new Date(),
+						summary: 'test',
+						repeating: {
+							freq: 'DAILY',
+							interval: 2,
+							byDay: ['SU', 'BAR', 'th']
+						}
+					});
+				}, /`repeating\.byDay` contains invalid value `BAR`/);
+			});
+
+			it('should throw error when repeating.byMonth is not valid', function() {
+				var cal = ical();
+				assert.throws(function() {
+					cal.createEvent({
+						start: new Date(),
+						end: new Date(),
+						summary: 'test',
+						repeating: {
+							freq: 'DAILY',
+							interval: 2,
+							byMonth: 'FOO'
+						}
+					});
+				}, /`repeating\.byMonth` contains invalid value `FOO`/);
+
+				assert.throws(function() {
+					cal.createEvent({
+						start: new Date(),
+						end: new Date(),
+						summary: 'test',
+						repeating: {
+							freq: 'DAILY',
+							interval: 2,
+							byMonth: [1, 14, 7]
+						}
+					});
+				}, /`repeating\.byMonth` contains invalid value `14`/);
+			});
+
+			it('should throw error when repeating.byMonthDay is not valid', function() {
+				var cal = ical();
+				assert.throws(function() {
+					cal.createEvent({
+						start: new Date(),
+						end: new Date(),
+						summary: 'test',
+						repeating: {
+							freq: 'DAILY',
+							interval: 2,
+							byMonthDay: 'FOO'
+						}
+					});
+				}, /`repeating\.byMonthDay` contains invalid value `FOO`/);
+
+				assert.throws(function() {
+					cal.createEvent({
+						start: new Date(),
+						end: new Date(),
+						summary: 'test',
+						repeating: {
+							freq: 'DAILY',
+							interval: 2,
+							byMonthDay: [1, 32, 15]
+						}
+					});
+				}, /`repeating\.byMonthDay` contains invalid value `32`/);
+			});
 		});
 
 		describe('summary()', function() {
@@ -960,7 +1047,8 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 			});
 
 			it('case #1', function() {
-				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'});
+				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'}),
+					string, json;
 				cal.createEvent({
 					id: '123',
 					start: new Date('Fr Oct 04 2013 22:39:30 UTC'),
@@ -970,11 +1058,16 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 				});
 
 				/*jslint stupid: true */
-				assert.equal(cal.toString(), fs.readFileSync(__dirname + '/results/generate_01.ics', 'utf8'));
+				string = cal.toString();
+				assert.equal(string, fs.readFileSync(__dirname + '/results/generate_01.ics', 'utf8'));
+
+				json = JSON.stringify(cal.toJSON());
+				assert.equal(ical(json).toString(), string);
 			});
 
 			it('case #2', function() {
-				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'});
+				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'}),
+					string, json;
 				cal.createEvent({
 					id: '123',
 					start: new Date('Fr Oct 04 2013 22:39:30 UTC'),
@@ -986,11 +1079,16 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 				});
 
 				/*jslint stupid: true */
-				assert.equal(cal.toString(), fs.readFileSync(__dirname + '/results/generate_02.ics', 'utf8'));
+				string = cal.toString();
+				assert.equal(string, fs.readFileSync(__dirname + '/results/generate_02.ics', 'utf8'));
+
+				json = JSON.stringify(cal.toJSON());
+				assert.equal(ical(json).toString(), string);
 			});
 
 			it('case #3', function() {
-				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'});
+				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'}),
+					string, json;
 				cal.createEvent({
 					id: '123',
 					start: new Date('Fr Oct 04 2013 22:39:30 UTC'),
@@ -1005,11 +1103,16 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 				});
 
 				/*jslint stupid: true */
-				assert.equal(cal.toString(), fs.readFileSync(__dirname + '/results/generate_03.ics', 'utf8'));
+				string = cal.toString();
+				assert.equal(string, fs.readFileSync(__dirname + '/results/generate_03.ics', 'utf8'));
+
+				json = JSON.stringify(cal.toJSON());
+				assert.equal(ical(json).toString(), string);
 			});
 
 			it('case #4 (repeating)', function() {
-				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'});
+				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'}),
+					string, json;
 				cal.events([
 					{
 						id: '1',
@@ -1047,11 +1150,16 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 				]);
 
 				/*jslint stupid: true */
-				assert.equal(cal.toString(), fs.readFileSync(__dirname + '/results/generate_04.ics', 'utf8'));
+				string = cal.toString();
+				assert.equal(string, fs.readFileSync(__dirname + '/results/generate_04.ics', 'utf8'));
+
+				json = JSON.stringify(cal.toJSON());
+				assert.equal(ical(json).toString(), string);
 			});
 
 			it('case #5 (floating)', function() {
-				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'});
+				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'}),
+					string, json;
 				cal.createEvent({
 					id: '1',
 					start: new Date('Fr Oct 04 2013 22:39:30 UTC'),
@@ -1062,11 +1170,16 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 				});
 
 				/*jslint stupid: true */
-				assert.equal(cal.toString(), fs.readFileSync(__dirname + '/results/generate_05.ics', 'utf8'));
+				string = cal.toString();
+				assert.equal(string, fs.readFileSync(__dirname + '/results/generate_05.ics', 'utf8'));
+
+				json = JSON.stringify(cal.toJSON());
+				assert.equal(ical(json).toString(), string);
 			});
 
 			it('case #6 (attendee with simple delegation and alarm)', function() {
-				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'});
+				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'}),
+					string, json;
 				cal.createEvent({
 					id: '123',
 					start: new Date('Fr Oct 04 2013 22:39:30 UTC'),
@@ -1105,7 +1218,60 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 				});
 
 				/*jslint stupid: true */
-				assert.equal(cal.toString(), fs.readFileSync(__dirname + '/results/generate_06.ics', 'utf8'));
+				string = cal.toString();
+				assert.equal(string, fs.readFileSync(__dirname + '/results/generate_06.ics', 'utf8'));
+
+				json = JSON.stringify(cal.toJSON());
+				assert.equal(ical(json).toString(), string);
+			});
+
+			it('case #7 (repeating: byDay, byMonth, byMonthDay)', function() {
+				var cal = ical({domain: 'sebbo.net', prodId: '//sebbo.net//ical-generator.tests//EN'}),
+					string, json;
+				cal.events([
+					{
+						id: '1',
+						start: new Date('Fr Oct 04 2013 22:39:30 UTC'),
+						end: new Date('Fr Oct 06 2013 23:15:00 UTC'),
+						stamp: new Date('Fr Oct 04 2013 23:34:53 UTC'),
+						summary: 'repeating by month',
+						repeating: {
+							freq: 'monthly',
+							byMonth: [1, 4, 7, 10]
+						}
+					},
+					{
+						id: '2',
+						start: new Date('Fr Oct 04 2013 22:39:30 UTC'),
+						end: new Date('Fr Oct 06 2013 23:15:00 UTC'),
+						stamp: new Date('Fr Oct 04 2013 23:34:53 UTC'),
+						summary: 'repeating on Mo/We/Fr, twice',
+						repeating: {
+							freq: 'DAILY',
+							count: 2,
+							byDay: ['mo', 'we', 'fr']
+						}
+					},
+					{
+						id: '3',
+						start: new Date('Fr Oct 04 2013 22:39:30 UTC'),
+						end: new Date('Fr Oct 06 2013 23:15:00 UTC'),
+						stamp: new Date('Fr Oct 04 2013 23:34:53 UTC'),
+						summary: 'repeating on 1st and 15th',
+						repeating: {
+							freq: 'DAILY',
+							interval: 1,
+							byMonthDay: [1, 15]
+						}
+					}
+				]);
+
+				/*jslint stupid: true */
+				string = cal.toString();
+				assert.equal(string, fs.readFileSync(__dirname + '/results/generate_07.ics', 'utf8'));
+
+				json = JSON.stringify(cal.toJSON());
+				assert.equal(ical(json).toString(), string);
 			});
 		});
 	});
@@ -1177,11 +1343,18 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 				assert.equal(a.role(), 'REQ-PARTICIPANT');
 			});
 
+			it('should throw error when method empty', function() {
+				var a = ical().createEvent().createAttendee();
+				assert.throws(function() {
+					a.role('');
+				}, /`role` must be a non-empty string/);
+			});
+
 			it('should throw error when method not allowed', function() {
 				var a = ical().createEvent().createAttendee();
 				assert.throws(function() {
 					a.role('COOKING');
-				}, /`role`/);
+				}, /`role` must be one of the following/);
 			});
 
 			it('should change something', function() {
@@ -1208,11 +1381,18 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 				assert.equal(a.status(), 'ACCEPTED');
 			});
 
+			it('should throw error when method empty', function() {
+				var a = ical().createEvent().createAttendee();
+				assert.throws(function() {
+					a.status('');
+				}, /`status` must be a non-empty string/);
+			});
+
 			it('should throw error when method not allowed', function() {
 				var a = ical().createEvent().createAttendee();
 				assert.throws(function() {
 					a.status('DRINKING');
-				}, /`status`/);
+				}, /`status` must be one of the following/);
 			});
 
 			it('should change something', function() {
@@ -1225,6 +1405,44 @@ describe('ical-generator 0.2.x / ICalCalendar', function() {
 
 				event.createAttendee({email: 'mail@example.com', status: 'declined'});
 				assert.ok(cal.toString().indexOf('DECLINED') > -1);
+			});
+		});
+
+		describe('type()', function() {
+			it('setter should return this', function() {
+				var a = ical().createEvent().createAttendee();
+				assert.deepEqual(a, a.type('individual'));
+			});
+
+			it('getter should return value', function() {
+				var a = ical().createEvent().createAttendee().type('room');
+				assert.equal(a.type(), 'ROOM');
+			});
+
+			it('should throw error when method empty', function() {
+				var a = ical().createEvent().createAttendee();
+				assert.throws(function() {
+					a.type('');
+				}, /`type` must be a non-empty string/);
+			});
+
+			it('should throw error when method not allowed', function() {
+				var a = ical().createEvent().createAttendee();
+				assert.throws(function() {
+					a.type('DRINKING');
+				}, /`type` must be one of the following/);
+			});
+
+			it('should change something', function() {
+				var cal = ical(),
+					event = cal.createEvent({
+						start: new Date(),
+						end: new Date(new Date().getTime() + 3600000),
+						summary: 'Example Event'
+					});
+
+				event.createAttendee({email: 'mailing-list@example.com', type: 'group'});
+				assert.ok(cal.toString().indexOf('GROUP') > -1);
 			});
 		});
 
